@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class Student {
@@ -18,11 +18,12 @@ public class Student {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    private Date dateOfBirth;
-    public Date getDateOfBirth() {
+    private LocalDate dateOfBirth;
+
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
     private String gender;
@@ -41,7 +42,7 @@ public class Student {
     }
 
 
-    public Student(String id, String firstName, String lastName, Date dateOfBirth, String gender){
+    public Student(String firstName, String lastName, LocalDate dateOfBirth, String gender){
         UUID uuid = UUID.randomUUID();
         this.id = uuid.toString();
         this.firstName = firstName;
