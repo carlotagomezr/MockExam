@@ -70,12 +70,8 @@ public class StudentController {
                 break;
             }
         }
-
-        // change arraylist to AllStudnets class type
-        AllStudents students = new AllStudents(updatedStudents);
-
         // write again in same line
-        CsvController.writeAllStudentsCSV(students);
+        CsvController.writeAllStudentsCSV(updatedStudents);
     
     
     

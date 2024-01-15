@@ -49,7 +49,7 @@ public class CsvController {
 
 
 
-    public static void writeCSV(Student student){
+    public static void writeOneStudentCSV(Student student){
         String filepath = "BackEnd/demo/src/main/resources/students.csv";
         File file = new File(filepath);
         try {
@@ -78,5 +78,44 @@ public class CsvController {
             e.printStackTrace();
         }
 
+    }
+
+
+    public static void writeAllStudentsCSV(ArrayList<Student> students){
+        System.out.println("DELETING STUDENT FROM FILE ");
+        try {
+            File file = new File("BackEnd/demo/src/main/resources/students.csv");
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("File created");
+            } else {
+                file.delete();
+                file.createNewFile();
+                System.out.println("File deleted and created again");
+            }
+    
+            FileWriter outputfile = new FileWriter(file, true);
+            CSVWriter writer = new CSVWriter(outputfile);
+    
+            for (Student student : students) {
+                System.out.println(student.getId());
+                System.out.println(student.getFirstName());
+                System.out.println(student.getLastName());
+                System.out.println(student.getDateOfBirth());
+                System.out.println(student.getGender());
+    
+                LocalDate dateOfBirth = student.getDateOfBirth();
+                String dateOfBirthStr = dateOfBirth != null ? dateOfBirth.toString() : "N/A";
+    
+                // add data
+                String[] data = {student.getId(), student.getFirstName(), student.getLastName(), dateOfBirthStr, student.getGender()};
+                writer.writeNext(data);
+            }
+    
+            writer.close();
+            System.out.println("All students added to file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
