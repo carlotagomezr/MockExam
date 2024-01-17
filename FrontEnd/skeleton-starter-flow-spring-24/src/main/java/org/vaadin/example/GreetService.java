@@ -6,6 +6,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import org.vaadin.example.models.ListStudents;
 
@@ -109,7 +112,33 @@ public class GreetService implements Serializable {
 
 
     public static void exportToCSVClient() {
-        // GET METHOD
+       HttpClient client = HttpClient.newHttpClient();
+
+       HttpRequest request = HttpRequest.newBuilder()
+       .uri(URI.create("http://localhost:8080/download-json-front"))
+       .header("Content-Type", "application/json") // important this line!
+       .GET()
+       .build();
+
+       try {
+              HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+              System.out.println("FILE RECEIVED FROM BACKEND");
+              System.out.println("Response: " + response.body());
+              // Save response, which would be a file, in the exports folder
+
+              if (response.statusCode() == 200) {
+                Files.writeString(Paths.get("src/main/Exports/students-download.json"), response.body(), 
+                    StandardOpenOption.CREATE, 
+                    StandardOpenOption.TRUNCATE_EXISTING);
+                System.out.println("Exported to CSV");
+              } else {
+                System.out.println("Error exporting to CSV");
+                  
+              }
+         } catch (IOException | InterruptedException e) {
+              e.printStackTrace();
+       }
+      
        
     }
 
