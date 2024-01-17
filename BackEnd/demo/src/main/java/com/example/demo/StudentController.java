@@ -1,7 +1,9 @@
 package com.example.demo;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -17,9 +19,14 @@ import com.example.demo.models.ListStudents;
 import com.example.demo.models.Student;
 import com.opencsv.exceptions.CsvValidationException;
 
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController // don't forget this annotation!!
@@ -181,5 +188,27 @@ public class StudentController {
         jsonManager.writeAllStudentsJSON(newStudents);
 
     }
+    
+
+
+    // GET METHOD TO DOWNLOAD THE JSON FILE AND THE CSV FILE IN THE FRONT END
+    @GetMapping("/download-json-front")
+    public ResponseEntity<UrlResource> sendFile() {
+        // Send a file from backend to fronEnd
+        String file_path = "src/main/java/com/example/demo/Exports/students.json";
+        Path path = Paths.get(file_path);
+
+        UrlResource file;
+        try {
+            file = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Error loading file", e);
+        }
+
+        return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\"" + file.getFilename() + "\"")
+        .body(file);
+    }
+    
     
 }
