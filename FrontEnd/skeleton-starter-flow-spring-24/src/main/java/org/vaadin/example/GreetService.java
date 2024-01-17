@@ -110,7 +110,7 @@ public class GreetService implements Serializable {
             
     }
 
-
+    // GET METHOD TO DOWNLOAD CSV ON FRONTEND
     public static void exportToCSVClient() {
        HttpClient client = HttpClient.newHttpClient();
 
