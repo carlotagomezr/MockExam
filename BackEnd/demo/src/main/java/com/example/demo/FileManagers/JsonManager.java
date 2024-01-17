@@ -1,5 +1,6 @@
 package com.example.demo.FileManagers;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,4 +59,34 @@ public class JsonManager {
             writer.write(updatedJson);
         }
     }
+
+
+    public void writeAllStudentsJSON(ListStudents students) throws IOException{
+        // Lee el contenido actual del archivo JSON en una lista de objetos Records
+        try {
+            File file = new File(filepath);
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("File created");
+            } else {
+                file.delete();
+                file.createNewFile();
+                System.out.println("File deleted and created again");
+            }
+    
+
+        // Convierte la lista actualizada a formato JSON
+        Gson gson = new Gson();
+        String updatedJson = gson.toJson(students.getStudents()); // new students coming from parameter
+
+        try (FileWriter writer = new FileWriter(filepath)) {
+            writer.write(updatedJson);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

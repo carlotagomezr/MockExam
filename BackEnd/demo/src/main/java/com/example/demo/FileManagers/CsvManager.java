@@ -73,5 +73,37 @@ public class CsvManager {
             e.printStackTrace();
         }
     }
+
+
+    public void writeAllStudents(ListStudents listStudents){
+        ArrayList<Student> students = listStudents.getStudents();
+        System.out.println("DELETING STUDENT FROM FILE ");
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("File created");
+            } else {
+                file.delete();
+                file.createNewFile();
+                System.out.println("File deleted and created again");
+            }
+    
+            FileWriter outputfile = new FileWriter(file, true);
+            CSVWriter writer = new CSVWriter(outputfile);
+    
+            for (Student student : students) {
+                String[] data = {student.getId(), student.getFirstName(), student.getLastName(),
+                     student.getDateOfBirth(), student.getGender()};
+                writer.writeNext(data);
+            }
+    
+            writer.close();
+            System.out.println("All students added to file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     
 }
