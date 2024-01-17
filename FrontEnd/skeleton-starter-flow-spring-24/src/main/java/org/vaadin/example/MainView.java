@@ -1,11 +1,18 @@
 package org.vaadin.example;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+import java.util.ArrayList;
 
-import com.vaadin.flow.component.Key;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.example.models.Student;
+import org.vaadin.example.models.ListStudents;
+
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -35,30 +42,68 @@ public class MainView extends VerticalLayout {
      *            The message service. Automatically injected Spring managed
      *            bean.
      */
-    public MainView(@Autowired GreetService service) {
 
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
-        textField.addClassName("bordered");
+    private FormLayout form = new FormLayout();
+    Grid<Student> grid = new Grid<>(Student.class);
 
-        // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
+    public MainView(@Autowired GreetService service) throws IOException, InterruptedException {
+        add(new H1("Web Application for Student Management - Mock Exam"));
+
+        // form
+        configureForm();
+
+        // grid
+        configureGrid();
+
+        // export button
+        
+        
+    }
+
+    private void configureGrid() throws IOException, InterruptedException {
+        grid.setColumns("id", "firstName", "lastName", "dateOfBirth", "gender");
+        ListStudents students = GreetService.getAllStudents();
+        ArrayList<Student> studentsList = students.getStudents();
+        grid.setItems(studentsList);
+        add(grid);
+
+        
+    }
+
+    private void configureForm() {
+       
+        TextField firstName = new TextField("First name");
+        TextField lastName = new TextField("Last name");
+        DatePicker birthDate = new DatePicker("Birth date");
+        
+        ComboBox<String> genderSelection = new ComboBox<>();
+        genderSelection.setItems("Female", "Male");
+
+        form.add(firstName, lastName, birthDate, genderSelection);
+
+    
+        // submit button
+        Button submit = new Button("Submit", event -> {
+            String date = birthDate.getValue().toString(); // Get the date 
+            String selectedGender = genderSelection.getValue(); // Get the selected gender
+            try {
+                GreetService.addStudent(firstName.getValue(),lastName.getValue(), date, selectedGender);
+                Notification.show("Student added", 3000, Notification.Position.MIDDLE);
+                updateGrid();
+            } catch (Exception e) {
+                Notification.show("Error adding student", 3000, Notification.Position.MIDDLE);
+            }
         });
 
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button has a more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        form.add(submit);
+        add(form);
 
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
+    }
 
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
-
-        add(textField, button);
+    private void updateGrid() throws IOException, InterruptedException {
+        ListStudents students = GreetService.getAllStudents();
+        ArrayList<Student> studentsList = students.getStudents();
+        grid.setItems(studentsList);
     }
 
 }
